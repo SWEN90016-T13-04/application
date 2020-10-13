@@ -1,6 +1,6 @@
 # SWEN90016 Assignment
 
-**Code Repositiory for Beth's Beuty Webb Application**
+**Code Repositiory for Beth's Beauty Webb Application**
 
 made by T13_04:
 - Jeronimo Barrios Suter
