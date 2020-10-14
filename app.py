@@ -1,9 +1,22 @@
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
-from flask_mysqldb import MySQL
+import mysql.connector
 import os
 
 app = Flask(__name__)
+
+
+
+# Create connection
+config = {
+    'user': 'flask',
+    'password': 'password',
+    # "host": "db",
+    'host': 'localhost',
+    'port': '3306',
+    'database': 'mydb'
+}
+connection = mysql.connector.connect(**config)
 
 @app.route('/')
 def home():
@@ -24,6 +37,13 @@ def do_admin_login():
 def logout():
     session['logged_in'] = False
     return home()
+
+@app.route("/dbtest")
+def dbtest():
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM addresses;')
+    results = cursor.fetchall()
+    return results[0]
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
