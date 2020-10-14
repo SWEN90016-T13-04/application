@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask_mysqldb import MySQL
 import os
 
 app = Flask(__name__)
