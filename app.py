@@ -5,13 +5,10 @@ import os
 
 app = Flask(__name__)
 
-
-
-# Create connection
+# Create database connection
 config = {
     'user': 'flask',
     'password': 'password',
-    # "host": "db",
     'host': 'localhost',
     'port': '3306',
     'database': 'mydb'
@@ -38,6 +35,7 @@ def logout():
     session['logged_in'] = False
     return home()
 
+# test endpoint for database
 @app.route("/dbtest")
 def dbtest():
     cursor = connection.cursor(dictionary=True)
