@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Customer Information Registration Form</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <!--Customer information-->
+        <p>
+            {{ form.firstName.label }}<br>
+            {{ form.firstName(size=32) }}
+            {% for error in form.firstName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.lastName.label }}<br>
+            {{ form.lastName(size=32) }}
+            {% for error in form.lastName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.phoneNumber.label }}<br>
+            {{ form.phoneNumber(size=10) }}
+            {% for error in form.phoneNumber.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email(size=32) }}
+            {% for error in form.email.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.extraInformation.label }}<br>
+            {{ form.extraInformation(size=32) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <!--Biller information-->
+        <p>
+            {{ form.billerName.label }}<br>
+            {{ form.billerName(size=32) }}
+        </p>
+        <p>
+            {{ form.billerEmail.label }}<br>
+            {{ form.billerEmail(size=32) }}
+            {% for error in form.billerEmail.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <!--Customer Address-->
+        <p>
+            {{ form.addressUnit.label }}<br>
+            {{ form.addressUnit(size=5) }}
+        </p>
+        <p>
+            {{ form.addressBuilding.label }}<br>
+            {{ form.addressBuilding(size=7) }}
+        </p>
+        <p>
+            {{ form.addressStreet.label }}<br>
+            {{ form.addressStreet(size=32) }}
+        </p>
+        <p>
+            {{ form.addressCity.label }}<br>
+            {{ form.addressCity(size=32) }}
+        </p>
+        <p>
+            {{ form.addressState.label }}<br>
+            {{ form.addressState(size=3) }}
+        </p>
+        <p>
+            {{ form.addressPostCode.label }}<br>
+            {{ form.addressPostCode(size=4) }}
+        </p>
+        <p>
+            {{ form.addressCountry.label }}<br>
+            {{ form.addressCountry(size=32) }}
+        </p>
+          <!--Submit Button-->
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

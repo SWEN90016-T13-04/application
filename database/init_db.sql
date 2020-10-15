@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `mydb`;
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `addresses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `addresses` (
-  `address_id` int NOT NULL,
+  `address_id` int NOT NULL AUTO_INCREMENT,
   `unit` varchar(45) DEFAULT NULL,
   `building` varchar(45) DEFAULT NULL,
   `street` varchar(45) DEFAULT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE `addresses` (
   `country` varchar(45) DEFAULT NULL,
   `post_code` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`address_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `addresses` (
 
 LOCK TABLES `addresses` WRITE;
 /*!40000 ALTER TABLE `addresses` DISABLE KEYS */;
-INSERT INTO `addresses` VALUES (1,NULL,'40','Davies Street','Brunswick','VIC','Australia','3056'),(2,'2A','122','Albert Street','Port Melbourne','VIC','Australia','3207'),(3,'212','225','St. Kilda Road','Melbourne','VIC','Australia','3000');
+INSERT INTO `addresses` VALUES (1,NULL,'40','Davies Street','Brunswick','VIC','Australia','3056'),(2,'2A','122','Albert Street','Port Melbourne','VIC','Australia','3207'),(3,'212','225','St. Kilda Road','Melbourne','VIC','Australia','3000'),(4,'55','59','Perciville Crescent','Moonee Ponds','VIC','Australia','3654');
 /*!40000 ALTER TABLE `addresses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,7 +55,7 @@ DROP TABLE IF EXISTS `appointment_boking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `appointment_boking` (
-  `appointment_id` int NOT NULL,
+  `appointment_id` int NOT NULL AUTO_INCREMENT,
   `beauty_carer_id` int NOT NULL,
   `service_id` int NOT NULL,
   `location` int NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE `appointment_boking` (
   `date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
-  `message` blob,
+  `message` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`appointment_id`,`beauty_carer_id`,`service_id`,`location`,`customer_id`),
   KEY `fk_appointment_boking_users1_idx` (`beauty_carer_id`),
   KEY `fk_appointment_boking_beauty_care_services1_idx` (`service_id`),
@@ -73,7 +73,7 @@ CREATE TABLE `appointment_boking` (
   CONSTRAINT `fk_appointment_boking_beauty_care_services1` FOREIGN KEY (`service_id`) REFERENCES `beauty_care_services` (`service_id`),
   CONSTRAINT `fk_appointment_boking_customers1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
   CONSTRAINT `fk_appointment_boking_users1` FOREIGN KEY (`beauty_carer_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,12 +94,12 @@ DROP TABLE IF EXISTS `beauty_care_services`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `beauty_care_services` (
-  `service_id` int NOT NULL,
+  `service_id` int NOT NULL AUTO_INCREMENT,
   `service_name` varchar(45) DEFAULT NULL,
   `cost` varchar(45) DEFAULT NULL,
   `duration_minutes` int DEFAULT NULL,
   PRIMARY KEY (`service_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,11 +120,11 @@ DROP TABLE IF EXISTS `biller_information`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `biller_information` (
-  `biller_id` int NOT NULL,
+  `biller_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`biller_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,20 +145,21 @@ DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
-  `customer_id` int NOT NULL,
+  `customer_id` int NOT NULL AUTO_INCREMENT,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
   `phone_number` int DEFAULT NULL,
-  `addresses_address_id` int NOT NULL,
-  `biller_information_biller_id` int NOT NULL,
+  `address_id` int NOT NULL,
   `email` varchar(45) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
-  `extra_information` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`,`addresses_address_id`,`biller_information_biller_id`),
-  KEY `fk_customers_addresses_idx` (`addresses_address_id`),
-  KEY `fk_customers_biller_information1_idx` (`biller_information_biller_id`),
-  CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`addresses_address_id`) REFERENCES `addresses` (`address_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `extra_information` varchar(250) DEFAULT NULL,
+  `biller_id` int NOT NULL,
+  PRIMARY KEY (`customer_id`,`address_id`,`biller_id`),
+  KEY `fk_customers_addresses_idx` (`address_id`),
+  KEY `fk_customers_biller_information1_idx1` (`biller_id`),
+  CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
+  CONSTRAINT `fk_customers_biller_information1` FOREIGN KEY (`biller_id`) REFERENCES `biller_information` (`biller_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +168,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'Hugh','Jass',5551234,1,1,'hjass@gmail.com','password','Has extremely long fingernails'),(2,'Lorretta','Schmetta',7896541,2,3,'hmu@email.com','password',NULL),(3,'Jimmy','Barnetsein',1597532,2,2,'hmu2@email.com','password',NULL),(4,'Gary','Oldman',1478569,3,2,'goldman@gmail.com','password','Not very mobile');
+INSERT INTO `customers` VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1),(2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2),(3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3),(4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,14 +180,14 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `user_id` int NOT NULL,
+  `user_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(45) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
   `is_admin` tinyint NOT NULL,
   `is_beauty_carer` tinyint NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,11 +209,11 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-14 19:52:57
+-- Dump completed on 2020-10-15 14:44:21
+
 
 -- Crete Flask App User
 USE `mydb`;
 CREATE USER IF NOT EXISTS 'flask'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL ON mydb.* TO 'flask'@'localhost';
 FLUSH PRIVILEGES;
-
