@@ -126,12 +126,9 @@ def login():
             extra_information=form.extraInformation.data,
             address_id=reg_address.address_id,
             biller_id=reg_bi.biller_id
-        )
-        #db.session.add(reg_customer)
-        print(str(reg_customer))
+        )     
         # Commit objects to databse
         db.session.add(reg_customer)
-        db.session.flush()
         db.session.commit()
         # Send to some other page
         return redirect('/')
