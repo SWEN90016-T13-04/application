@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 
 class CustomerInformationForm(FlaskForm):
@@ -8,12 +8,12 @@ class CustomerInformationForm(FlaskForm):
     firstName = StringField('First Name', validators=[DataRequired()])
     lastName = StringField('Last Name', validators=[DataRequired()])
     phoneNumber = IntegerField('Phone Number', validators=[DataRequired()])
-    email = EmailField('Email address', [validators.DataRequired(), validators.Email()])
+    email = EmailField('Email address', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     extraInformation = StringField('Extra Information')
     #Biller information
     billerName = StringField('Name on Invoice' , validators=[DataRequired()])
-    billerEmail = EmailField('Biller\'s Email address', [validators.DataRequired(), validators.Email()])
+    billerEmail = EmailField('Biller\'s Email address', validators=[DataRequired(), Email()])
     # Address
     addressUnit = StringField('Unit')
     addressBuilding = StringField('Building')
