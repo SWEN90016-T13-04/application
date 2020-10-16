@@ -75,14 +75,6 @@ def appointments():
             AppointmentBooking.customer_id == Customers.customer_id  
         ).order_by(AppointmentBooking.date, AppointmentBooking.start_time
         ).all()
-    # for r in results:
-    #     print(
-    #         r.appointment_booking.date, r.appointment_booking.start_time, r.appointment_booking.end_time,
-    #         r.customers.first_name, r.customers.last_name, 
-    #         r.users.first_name, r.users.last_name,
-    #         r.beauty_care_services.service_name,
-    #         r.addresses.unit, r.addresses.building, r.addresses.street, r.addresses.city, r.addresses.state,
-    #         )
 
     return render_template('appointments.html',
                             title='Booking Registrations',

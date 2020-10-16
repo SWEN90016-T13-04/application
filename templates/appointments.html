@@ -4,13 +4,13 @@
     <h1>Booking Registrations</h1>
     <table style="width:100%">
         <tr>
-          <th>Date</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th>Customer Name</th>
-          <th>Beauty Carer Name</th>
-          <th>Service</th>
-          <th>Location</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Customer Name</th>
+            <th>Beauty Carer Name</th>
+            <th>Service</th>
+            <th>Location</th>
         </tr>
         {% for row in rows %}
         <tr>
@@ -20,7 +20,7 @@
             <td>{{ row.customers.first_name }} {{ row.customers.last_name }}</td>
             <td>{{ row.users.first_name }}  {{ row.users.last_name }}</td>
             <td>{{ row.beauty_care_services.service_name }}</td>
-            <td>{{ row.addresses.unit+" / " if row.addresses.unit != None }} {{ row.addresses.building }} {{ row.addresses.street }} {{ row.addresses.city}} {{ row.addresses.state }}</td>
+            <td>{{ row.addresses.unit+" / " if row.addresses.unit != None }} {{ row.addresses.building }} {{ row.addresses.street+"," }} {{ row.addresses.city+", "}} {{ row.addresses.state }}</td>
         </tr>
         {% endfor %}
     </table>
