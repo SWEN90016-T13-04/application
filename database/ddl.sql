@@ -34,17 +34,17 @@ CREATE TABLE `addresses` (
   `country` varchar(45) DEFAULT NULL,
   `post_code` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`address_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `appointment_boking`
+-- Table structure for table `appointment_booking`
 --
 
-DROP TABLE IF EXISTS `appointment_boking`;
+DROP TABLE IF EXISTS `appointment_booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `appointment_boking` (
+CREATE TABLE `appointment_booking` (
   `appointment_id` int NOT NULL AUTO_INCREMENT,
   `beauty_carer_id` int NOT NULL,
   `service_id` int NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE `biller_information` (
   `name` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`biller_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,9 +117,8 @@ CREATE TABLE `customers` (
   PRIMARY KEY (`customer_id`,`address_id`,`biller_id`),
   KEY `fk_customers_addresses_idx` (`address_id`),
   KEY `fk_customers_biller_information1_idx1` (`biller_id`),
-  CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
-  CONSTRAINT `fk_customers_biller_information1` FOREIGN KEY (`biller_id`) REFERENCES `biller_information` (`biller_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -135,6 +134,8 @@ CREATE TABLE `users` (
   `password` varchar(45) DEFAULT NULL,
   `is_admin` tinyint NOT NULL,
   `is_beauty_carer` tinyint NOT NULL,
+  `first_name` varchar(45) NOT NULL,
+  `last_name` varchar(45) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -149,4 +150,10 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-15 14:45:01
+-- Dump completed on 2020-10-16 20:50:32
+
+-- Crete Flask App User
+USE `mydb`;
+CREATE USER IF NOT EXISTS 'flask'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL ON mydb.* TO 'flask'@'localhost';
+FLUSH PRIVILEGES;

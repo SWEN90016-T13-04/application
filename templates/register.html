@@ -36,6 +36,9 @@
         <p>
             {{ form.extraInformation.label }}<br>
             {{ form.extraInformation(size=32) }}
+            {% for error in form.extraInformation.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.password.label }}<br>
@@ -48,6 +51,9 @@
         <p>
             {{ form.billerName.label }}<br>
             {{ form.billerName(size=32) }}
+            {% for error in form.billerName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.billerEmail.label }}<br>
@@ -60,30 +66,51 @@
         <p>
             {{ form.addressUnit.label }}<br>
             {{ form.addressUnit(size=5) }}
+            {% for error in form.addressUnit.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressBuilding.label }}<br>
             {{ form.addressBuilding(size=7) }}
+            {% for error in form.addressBuilding.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressStreet.label }}<br>
             {{ form.addressStreet(size=32) }}
+            {% for error in form.addressStreet.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressCity.label }}<br>
             {{ form.addressCity(size=32) }}
+            {% for error in form.addressCity.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressState.label }}<br>
             {{ form.addressState(size=3) }}
+            {% for error in form.addressState.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressPostCode.label }}<br>
             {{ form.addressPostCode(size=4) }}
+            {% for error in form.addressPostCode.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.addressCountry.label }}<br>
             {{ form.addressCountry(size=32) }}
+            {% for error in form.addressCountry.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
           <!--Submit Button-->
         <p>{{ form.submit() }}</p>

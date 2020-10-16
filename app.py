@@ -95,6 +95,45 @@ def login():
     form = CustomerInformationForm()
     if form.validate_on_submit():
         flash(f'Login requested for user {form.firstName.data} {form.lastName.data}')
+        #Insert for data into database
+        # Create Address data object
+        reg_address = Addresses(
+            unit=form.addressUnit.data,
+            building=form.addressBuilding.data,
+            street=form.addressStreet.data,
+            city=form.addressCity.data,
+            state=form.addressState.data,
+            country=form.addressCountry.data,
+            post_code=form.addressPostCode.data
+        )
+        db.session.flush()
+        db.session.add(reg_address)
+        # Create Biller Information data object
+        reg_bi = BillerInformation(
+            name=form.billerName.data,
+            email=form.billerEmail.data
+        )
+        db.session.add(reg_bi)
+        # Flush session so we can access Foreign Keys
+        # Create Customer data object
+        db.session.flush()
+        reg_customer = Customers(
+            first_name=form.firstName.data,
+            last_name=form.lastName.data,
+            phone_number=form.phoneNumber.data,
+            email=form.email.data,
+            password=form.password.data,
+            extra_information=form.extraInformation.data,
+            address_id=reg_address.address_id,
+            biller_id=reg_bi.biller_id
+        )
+        #db.session.add(reg_customer)
+        print(str(reg_customer))
+        # Commit objects to databse
+        db.session.add(reg_customer)
+        db.session.flush()
+        db.session.commit()
+        # Send to some other page
         return redirect('/')
     return render_template('register.html', title='Customer Information Form', form=form)
 

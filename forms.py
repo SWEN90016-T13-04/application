@@ -12,15 +12,15 @@ class CustomerInformationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     extraInformation = StringField('Extra Information')
     #Biller information
-    billerName = StringField('Name on Invoice')
-    billerEmail = EmailField('Biller\'s Email address', [validators.Email()])
+    billerName = StringField('Name on Invoice' , validators=[DataRequired()])
+    billerEmail = EmailField('Biller\'s Email address', [validators.DataRequired(), validators.Email()])
     # Address
     addressUnit = StringField('Unit')
     addressBuilding = StringField('Building')
-    addressStreet = StringField('Street')
-    addressCity = StringField('City / Suburb')
-    addressState = StringField('State')
-    addressPostCode = StringField('Post Code')
-    addressCountry = StringField('Country')
+    addressStreet = StringField('Street', validators=[DataRequired()])
+    addressCity = StringField('City / Suburb', validators=[DataRequired()])
+    addressState = StringField('State', validators=[DataRequired()])
+    addressPostCode = StringField('Post Code', validators=[DataRequired()])
+    addressCountry = StringField('Country', validators=[DataRequired()])
     # Submit
     submit = SubmitField('Submit')
