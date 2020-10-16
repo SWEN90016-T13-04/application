@@ -2,21 +2,30 @@ from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from flask_mail import Mail, Message
 from flask_wtf import FlaskForm
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
 from forms import CustomerInformationForm
 
 app = Flask(__name__)
 
-# Create database connection
-config = {
-    'user': 'flask',
-    'password': 'password',
-    'host': 'localhost',
-    'port': '3306',
-    'database': 'mydb'
-}
-connection = mysql.connector.connect(**config)
+#SqlAlchemy Database Configuration With Mysql
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flask:password@localhost/mydb'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#Make Db Object
+db = SQLAlchemy(app)
+# Refelct DB
+Base = automap_base()
+Base.prepare(db.engine, reflect=True)
+#Create Table Model objects
+Addresses = Base.classes.addresses
+AppointmentBooking = Base.classes.appointment_booking
+BeautyCareServices = Base.classes.beauty_care_services
+BillerInformation = Base.classes.biller_information
+Customers = Base.classes.customers
+Users = Base.classes.users
+
 
 #Configure Email
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -25,8 +34,8 @@ app.config['MAIL_USERNAME'] = 'swen.group1304@gmail.com'
 app.config['MAIL_PASSWORD'] = 'swen#swen5916'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-
 mail = Mail(app)
+
 
 
 @app.route('/')
@@ -49,13 +58,37 @@ def logout():
     session['logged_in'] = False
     return home()
 
-# test endpoint for database
-@app.route("/dbtest")
-def dbtest():
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM addresses;')
-    results = cursor.fetchall()
-    return results[0]
+
+#Show all appointments
+#TODO: Make accessible to admin only
+@app.route('/appointments')
+def appointments():
+    results = db.session.query(
+            AppointmentBooking, Addresses, BeautyCareServices, Customers, Users, 
+        ).filter(
+            AppointmentBooking.beauty_carer_id == Users.user_id,
+        ).filter(
+            AppointmentBooking.service_id == BeautyCareServices.service_id,    
+        ).filter(
+            AppointmentBooking.location == Addresses.address_id,  
+        ).filter(
+            AppointmentBooking.customer_id == Customers.customer_id  
+        ).order_by(AppointmentBooking.date, AppointmentBooking.start_time
+        ).all()
+    # for r in results:
+    #     print(
+    #         r.appointment_booking.date, r.appointment_booking.start_time, r.appointment_booking.end_time,
+    #         r.customers.first_name, r.customers.last_name, 
+    #         r.users.first_name, r.users.last_name,
+    #         r.beauty_care_services.service_name,
+    #         r.addresses.unit, r.addresses.building, r.addresses.street, r.addresses.city, r.addresses.state,
+    #         )
+
+    return render_template('appointments.html',
+                            title='Booking Registrations',
+                            rows=results)
+
+
 
 #basic endpoint to send
 @app.route("/mail")
