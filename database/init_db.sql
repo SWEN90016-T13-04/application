@@ -34,7 +34,7 @@ CREATE TABLE `addresses` (
   `country` varchar(45) DEFAULT NULL,
   `post_code` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`address_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,7 +103,7 @@ CREATE TABLE `beauty_care_services` (
   `cost` varchar(45) DEFAULT NULL,
   `duration_minutes` int DEFAULT NULL,
   PRIMARY KEY (`service_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,6 +115,7 @@ LOCK TABLES `beauty_care_services` WRITE;
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (1,'Haircut','35.00',60);
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (2,'Hair Wash & Dry','50.00',60);
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (3,'Hair Colour','75.00',60);
+INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (4,'Blow Dry','75',60);
 /*!40000 ALTER TABLE `beauty_care_services` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +131,7 @@ CREATE TABLE `biller_information` (
   `name` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`biller_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,11 +164,12 @@ CREATE TABLE `customers` (
   `password` varchar(45) DEFAULT NULL,
   `extra_information` varchar(250) DEFAULT NULL,
   `biller_id` int NOT NULL,
+  `authenticated` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`customer_id`,`address_id`,`biller_id`),
   KEY `fk_customers_addresses_idx` (`address_id`),
   KEY `fk_customers_biller_information1_idx1` (`biller_id`),
   CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -176,10 +178,10 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0,0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -192,12 +194,13 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(45) DEFAULT NULL,
+  `username` varchar(45) NOT NULL,
   `password` varchar(45) DEFAULT NULL,
   `is_admin` tinyint NOT NULL,
   `is_beauty_carer` tinyint NOT NULL,
   `first_name` varchar(45) NOT NULL,
   `last_name` varchar(45) NOT NULL,
+  `authenticated` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -209,8 +212,8 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`) VALUES (1,'beth@bb.com.au','password',1,1,'Beth','McBeth');
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`) VALUES (2,'neil@bb.com.au','password',0,1,'Niel','Lentils');
+INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (1,'beth@bb.com.au','password',1,1,'Beth','McBeth',0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (2,'neil@bb.com.au','password',0,1,'Niel','Lentils',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -223,8 +226,7 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-16 20:55:35
-
+-- Dump completed on 2020-10-17 17:02:46
 
 -- Crete Flask App User
 USE `mydb`;

@@ -39,3 +39,8 @@ class EditServices(FlaskForm):
     durationMinutes = IntegerField('Duration Minutes', validators=[DataRequired()])
     #Submit Form
     submit = SubmitField('Submit')
+
+class LoginForm(FlaskForm):
+    username = EmailField('Username / Email')
+    password = PasswordField('Password')
+    submit = SubmitField('Submit')

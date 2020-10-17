@@ -1,4 +1,31 @@
-<link rel="stylesheet" href="/static/style.css" type="text/css">
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Login</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+    
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+            {% for error in form.username.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
+
+
+<!-- <link rel="stylesheet" href="/static/style.css" type="text/css">
 {% block body %}
     <form action="/login" method="POST">
         <div class="login">
@@ -20,4 +47,4 @@
             </div>
         </div>
     </form>
-{% endblock %}
+{% endblock %} -->

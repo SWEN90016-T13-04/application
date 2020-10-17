@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `mydb`;
 -- MySQL dump 10.13  Distrib 8.0.21, for macos10.15 (x86_64)
 --
 -- Host: localhost    Database: mydb
@@ -50,6 +48,7 @@ LOCK TABLES `beauty_care_services` WRITE;
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (1,'Haircut','35.00',60);
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (2,'Hair Wash & Dry','50.00',60);
 INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (3,'Hair Colour','75.00',60);
+INSERT INTO `beauty_care_services` (`service_id`, `service_name`, `cost`, `duration_minutes`) VALUES (4,'Blow Dry','75',60);
 /*!40000 ALTER TABLE `beauty_care_services` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -72,10 +71,10 @@ UNLOCK TABLES;
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0,0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,8 +84,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`) VALUES (1,'beth@bb.com.au','password',1,1,'Beth','McBeth');
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`) VALUES (2,'neil@bb.com.au','password',0,1,'Niel','Lentils');
+INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (1,'beth@bb.com.au','password',1,1,'Beth','McBeth',0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (2,'neil@bb.com.au','password',0,1,'Niel','Lentils',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -99,4 +98,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-16 20:54:21
+-- Dump completed on 2020-10-17 17:04:23

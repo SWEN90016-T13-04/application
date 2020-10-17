@@ -6,7 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
-from forms import CustomerInformationForm, EditServices
+from forms import CustomerInformationForm, EditServices, LoginForm
+from flask_login import LoginManager, login_manager, login_required, login_user, current_user, logout_user
 
 app = Flask(__name__)
 
@@ -24,7 +25,7 @@ AppointmentBooking = Base.classes.appointment_booking
 BeautyCareServices = Base.classes.beauty_care_services
 BillerInformation = Base.classes.biller_information
 Customers = Base.classes.customers
-Users = Base.classes.users
+#Users = Base.classes.users
 
 
 #Configure Email
@@ -36,30 +37,109 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-@app.route('/')
-def home():
-    if not session.get('logged_in'):
-        return render_template('login.html')
-    else:
-        return 'Hello Boss!  <a href="/logout">Logout</a>'
+login_manager = LoginManager()
+login_manager.init_app(app)
 
-@app.route('/login', methods=['POST'])
-def do_admin_login():
-    if request.form['password'] == 'password' and request.form['username'] == 'admin':
-        session['logged_in'] = True
-    else:
-        flash('wrong password!')
-    return home()
+#User model for authentication
+class Users(db.Model):
+    """An admin user capable of viewing reports.
 
-@app.route("/logout")
+    :param str email: email address of user
+    :param str password: encrypted password for the user
+
+    """
+    __tablename__ = 'users'
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_beauty_carer = db.Column(db.Boolean, default=False)
+    first_name = db.Column(db.String)
+    last_name = db.Column(db.String)
+    authenticated = db.Column(db.Boolean, default=False)
+
+    def is_active(self):
+        """True, as all users are active."""
+        return True
+
+    def get_id(self):
+        """Return the email address to satisfy Flask-Login's requirements."""
+        return self.user_id
+
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        return self.authenticated
+
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
+
+@login_manager.user_loader
+def user_loader(user_id):
+    """Given *user_id*, return the associated User object.
+
+    :param unicode user_id: user_id (email) user to retrieve
+
+    """
+    return Users.query.get(user_id)
+
+# @app.route('/')
+# def home():
+#     if not session.get('logged_in'):
+#         return render_template('login.html')
+#     else:
+#         return 'Hello Boss!  <a href="/logout">Logout</a>'
+
+# @app.route('/login', methods=['POST'])
+# def do_admin_login():
+#     if request.form['password'] == 'password' and request.form['username'] == 'admin':
+#         session['logged_in'] = True
+#     else:
+#         flash('wrong password!')
+#     return home()
+
+# @app.route("/logout")
+# def logout():
+#     session['logged_in'] = False
+#     return home()
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """For GET requests, display the login form. 
+    For POSTS, login the current user by processing the form.
+
+    """
+    print(db)
+    form = LoginForm()
+    if form.validate_on_submit():
+        uid = db.session.query(Users).filter(Users.username==form.username.data).one_or_none()
+        #TODO return something for invalid user
+        user = Users.query.get(uid.user_id)
+        if user:
+            if user.password == form.password.data:
+                print("authenticated")
+                user.authenticated = True
+                db.session.add(user)
+                db.session.commit()
+                login_user(user, remember=True)
+                return redirect('/')
+    return render_template("login.html", form=form)
+
+@app.route("/logout", methods=["GET"])
+@login_required
 def logout():
-    session['logged_in'] = False
-    return home()
-
+    """Logout the current user."""
+    user = current_user
+    user.authenticated = False
+    db.session.add(user)
+    db.session.commit()
+    logout_user()
+    return render_template("logout.html")
 
 #Show all appointments
 #TODO: Make accessible to admin only
 @app.route('/appointments')
+@login_required
 def appointments():
     results = db.session.query(
             AppointmentBooking, Addresses, BeautyCareServices, Customers, Users, 
@@ -90,7 +170,7 @@ def index():
    return "Sent"
 
 @app.route('/register' , methods=['GET', 'POST'])
-def login():
+def register():
     form = CustomerInformationForm()
     if form.validate_on_submit():
         flash(f'Login requested for user {form.firstName.data} {form.lastName.data}')
@@ -138,6 +218,7 @@ def login():
 # Edit available Beauty Care Servcies
 #TODO implement ability to delete services with QuerySelectField
 @app.route('/editservices' , methods=['GET', 'POST'])
+@login_required
 def edit_servcies():
     form = EditServices()
     if form.validate_on_submit():
