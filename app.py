@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
-from forms import CustomerInformationForm
+from forms import CustomerInformationForm, EditServices
 
 app = Flask(__name__)
 
@@ -35,8 +35,6 @@ app.config['MAIL_PASSWORD'] = 'swen#swen5916'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
-
-
 
 @app.route('/')
 def home():
@@ -75,11 +73,12 @@ def appointments():
             AppointmentBooking.customer_id == Customers.customer_id  
         ).order_by(AppointmentBooking.date, AppointmentBooking.start_time
         ).all()
-
+    
+    if not results:
+        flash('No Appointments found')
     return render_template('appointments.html',
                             title='Booking Registrations',
                             rows=results)
-
 
 
 #basic endpoint to send
@@ -131,8 +130,31 @@ def login():
         db.session.add(reg_customer)
         db.session.commit()
         # Send to some other page
-        return redirect('/')
-    return render_template('register.html', title='Customer Information Form', form=form)
+        return redirect('/register')
+    return render_template('register.html', 
+                            title='Customer Information Form',
+                            form=form)
+
+# Edit available Beauty Care Servcies
+#TODO implement ability to delete services with QuerySelectField
+@app.route('/editservices' , methods=['GET', 'POST'])
+def edit_servcies():
+    form = EditServices()
+    if form.validate_on_submit():
+        flash(f'Added Service {form.serviceName.data}')
+        reg_edit_bcs = BeautyCareServices(
+            service_name=form.serviceName.data,
+            cost=form.serviceCost.data,
+            duration_minutes=form.durationMinutes.data
+        )
+        db.session.add(reg_edit_bcs)
+        db.session.commit()
+        return redirect('/editservices')
+
+    return render_template('editservices.html', 
+                            title='Edit Beauty Care Services',
+                            form=form)
+
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
