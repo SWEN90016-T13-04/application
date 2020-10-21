@@ -6,6 +6,13 @@ USE `mydb`;
 -- ------------------------------------------------------
 -- Server version	8.0.21
 
+-- Changes on this version:
+-- * Changed customer table have a relationship with user table, customers are now users with extra information
+-- * Deleted is_admin column is_beauty_carer column and replaced it with a binary-encoded privilege column
+--     * 1 no privileges (001)
+--     * 3 beauty carer (011)
+--     * 7 admin (111)
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -151,21 +158,37 @@ UNLOCK TABLES;
 -- Table structure for table `customers`
 --
 
+-- DROP TABLE IF EXISTS `customers`;
+-- /*!40101 SET @saved_cs_client     = @@character_set_client */;
+-- /*!50503 SET character_set_client = utf8mb4 */;
+-- CREATE TABLE `customers` (
+--   `customer_id` int NOT NULL AUTO_INCREMENT,
+--   `first_name` varchar(45) DEFAULT NULL,
+--   `last_name` varchar(45) DEFAULT NULL,
+--   `phone_number` int DEFAULT NULL,
+--   `address_id` int NOT NULL,
+--   `email` varchar(45) DEFAULT NULL,
+--   `password` varchar(45) DEFAULT NULL,
+--   `extra_information` varchar(250) DEFAULT NULL,
+--   `biller_id` int NOT NULL,
+--   `authenticated` tinyint NOT NULL DEFAULT '0',
+--   PRIMARY KEY (`customer_id`,`address_id`,`biller_id`),
+--   KEY `fk_customers_addresses_idx` (`address_id`),
+--   KEY `fk_customers_biller_information1_idx1` (`biller_id`),
+--   CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`)
+-- ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+-- /*!40101 SET character_set_client = @saved_cs_client */;
+
 DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(45) DEFAULT NULL,
-  `last_name` varchar(45) DEFAULT NULL,
   `phone_number` int DEFAULT NULL,
   `address_id` int NOT NULL,
-  `email` varchar(45) DEFAULT NULL,
-  `password` varchar(45) DEFAULT NULL,
   `extra_information` varchar(250) DEFAULT NULL,
   `biller_id` int NOT NULL,
-  `authenticated` tinyint NOT NULL DEFAULT '0',
-  PRIMARY KEY (`customer_id`,`address_id`,`biller_id`),
+  PRIMARY KEY (`customer_id`),
   KEY `fk_customers_addresses_idx` (`address_id`),
   KEY `fk_customers_biller_information1_idx1` (`biller_id`),
   CONSTRAINT `fk_customers_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`)
@@ -176,12 +199,21 @@ CREATE TABLE `customers` (
 -- Dumping data for table `customers`
 --
 
+-- LOCK TABLES `customers` WRITE;
+-- /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+-- INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1,0);
+-- INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2,0);
+-- INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3,0);
+-- INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0,0);
+-- /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+-- UNLOCK TABLES;
+
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1,0);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2,0);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3,0);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0,0);
+INSERT INTO `customers` (`customer_id`, `phone_number`, `address_id`, `extra_information`, `biller_id`) VALUES (1, 5551234, 1,'Is fragile', 1);
+INSERT INTO `customers` (`customer_id`, `phone_number`, `address_id`, `extra_information`, `biller_id`) VALUES (2, 7896541, 2,'Is old', 2);
+INSERT INTO `customers` (`customer_id`, `phone_number`, `address_id`, `extra_information`, `biller_id`) VALUES (3, 1597532, 2, 'Smells like boiled cabbage', 3);
+INSERT INTO `customers` (`customer_id`, `phone_number`, `address_id`, `extra_information`, `biller_id`) VALUES (4, 1478569, 3, 'Can\'t walk', 0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,13 +228,16 @@ CREATE TABLE `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
   `password` varchar(45) DEFAULT NULL,
-  `is_admin` tinyint NOT NULL,
-  `is_beauty_carer` tinyint NOT NULL,
+  `privileges` tinyint NOT NULL,
   `first_name` varchar(45) NOT NULL,
   `last_name` varchar(45) NOT NULL,
   `authenticated` tinyint NOT NULL DEFAULT '0',
+  `customer_id` int,
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  -- KEY `fk_customers_id` (`customer_id`),--
+  -- CONSTRAINT `fk_customers_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`)
+  FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -212,8 +247,12 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (1,'beth@bb.com.au','password',1,1,'Beth','McBeth',0);
-INSERT INTO `users` (`user_id`, `username`, `password`, `is_admin`, `is_beauty_carer`, `first_name`, `last_name`, `authenticated`) VALUES (2,'neil@bb.com.au','password',0,1,'Niel','Lentils',0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (1, 'beth@bb.com.au', 'password', 7, 'Beth', 'McBeth', null, 0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (2, 'neil@bb.com.au', 'password', 3, 'Niel', 'Lentils', null, 0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (3, 'hjass@gmail.com', 'password', 1, 'Hugh', 'Jass', 1, 0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (4, 'hmu@email.com', 'password', 1, 'Lorretta', 'Schmetta', 2, 0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (5, 'hmu2@email.com', 'password', 1, 'Jimmy', 'Barnetsein', 3, 0);
+INSERT INTO `users` (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`) VALUES (6, 'goldman@gmail.com', 'password', 1, 'Gary', 'Oldman', 4, 0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

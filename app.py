@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://flask:password@l
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #Make Db Object
 db = SQLAlchemy(app)
-# Refelct DB
+# Reflect DB
 Base = automap_base()
 Base.prepare(db.engine, reflect=True)
 #Create Table Model objects
@@ -50,12 +50,12 @@ class Users(db.Model):
     """
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String)
+    username =  db.Column(db.String)
     password = db.Column(db.String)
-    is_admin = db.Column(db.Boolean, default=False)
-    is_beauty_carer = db.Column(db.Boolean, default=False)
+    privileges = db.Column(db.Integer, default=0)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
+    customer_id = db.Column(db.Integer)
     authenticated = db.Column(db.Boolean, default=False)
 
     def is_active(self):
@@ -73,6 +73,15 @@ class Users(db.Model):
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
+
+    def get_username(self):
+        """Returns username."""
+        return self.username
+
+    def get_privileges(self):
+        """Returns user privileges"""
+        return self.privileges
+
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -164,7 +173,7 @@ def appointments():
 #basic endpoint to send
 @app.route("/mail")
 def index():
-   msg = Message('Hello', sender = 'swen.group1304@gmail.com', recipients = ['samtpjones@gmail.com'])
+   msg = Message('Hello', sender = 'swen.group1304@gmail.com', recipients = ['jbarriossute@student.unimelb.edu.au'])
    msg.body = "This is the email body"
    mail.send(msg)
    return "Sent"
@@ -176,6 +185,7 @@ def register():
         flash(f'Login requested for user {form.firstName.data} {form.lastName.data}')
         #Insert for data into database
         # Create Address data object
+
         reg_address = Addresses(
             unit=form.addressUnit.data,
             building=form.addressBuilding.data,
@@ -185,6 +195,7 @@ def register():
             country=form.addressCountry.data,
             post_code=form.addressPostCode.data
         )
+
         db.session.flush()
         db.session.add(reg_address)
         # Create Biller Information data object
@@ -192,49 +203,68 @@ def register():
             name=form.billerName.data,
             email=form.billerEmail.data
         )
+
         db.session.add(reg_bi)
         # Flush session so we can access Foreign Keys
         # Create Customer data object
         db.session.flush()
         reg_customer = Customers(
-            first_name=form.firstName.data,
-            last_name=form.lastName.data,
             phone_number=form.phoneNumber.data,
-            email=form.email.data,
-            password=form.password.data,
-            extra_information=form.extraInformation.data,
             address_id=reg_address.address_id,
+            extra_information=form.extraInformation.data,
             biller_id=reg_bi.biller_id
-        )     
+        )
+
         # Commit objects to databse
         db.session.add(reg_customer)
-        db.session.commit()
+        db.session.flush()
         # Send to some other page
+
+        # (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`)
+        breakpoint()
+        reg_user = Users(
+            username=form.email.data,
+            password=form.password.data,
+            privileges=1,
+            first_name=form.firstName.data,
+            last_name=form.lastName.data,
+            customer_id=reg_customer.customer_id,
+            authenticated=0,
+        )
+        breakpoint()
+        db.session.add(reg_user)
+        db.session.commit()
+
         return redirect('/register')
     return render_template('register.html', 
                             title='Customer Information Form',
                             form=form)
 
-# Edit available Beauty Care Servcies
+# TODO: Changes don't seem to be persistent?
+
+# Edit available Beauty Care Services
 #TODO implement ability to delete services with QuerySelectField
 @app.route('/editservices' , methods=['GET', 'POST'])
 @login_required
-def edit_servcies():
-    form = EditServices()
-    if form.validate_on_submit():
-        flash(f'Added Service {form.serviceName.data}')
-        reg_edit_bcs = BeautyCareServices(
-            service_name=form.serviceName.data,
-            cost=form.serviceCost.data,
-            duration_minutes=form.durationMinutes.data
-        )
-        db.session.add(reg_edit_bcs)
-        db.session.commit()
-        return redirect('/editservices')
+def edit_services():
+    if current_user.get_privileges() >= 7:
+        form = EditServices()
+        if form.validate_on_submit():
+            flash(f'Added Service {form.serviceName.data}')
+            reg_edit_bcs = BeautyCareServices(
+                service_name=form.serviceName.data,
+                cost=form.serviceCost.data,
+                duration_minutes=form.durationMinutes.data
+            )
+            db.session.add(reg_edit_bcs)
+            db.session.commit()
+            return redirect('/editservices')
 
-    return render_template('editservices.html', 
-                            title='Edit Beauty Care Services',
-                            form=form)
+        return render_template('editservices.html',
+                                title='Edit Beauty Care Services',
+                                form=form)
+    else:
+        return redirect('/')
 
 
 if __name__ == "__main__":
