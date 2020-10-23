@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
-from forms import CustomerInformationForm, EditServices, LoginForm
+from forms import CustomerInformationForm, EditServices, LoginForm, CustomerProfile
 from flask_login import LoginManager, login_manager, login_required, login_user, current_user, logout_user
 
 app = Flask(__name__)
@@ -82,6 +82,74 @@ class Users(db.Model):
         """Returns user privileges"""
         return self.privileges
 
+    def get_attribute(self, attribute_name):
+        """Returns any attribute by name, except password"""
+        if attribute_name != 'password':
+            return getattr(self, attribute_name)
+
+def get_customer_details(customer_id):
+    """Get a customers details based on its ID"""
+    details = {
+        'phone_number':'Not set',
+        'address_id':'Not set',
+        'extra_information':'Not set',
+        'biller_id':'Not set'
+    }
+
+    if customer_id:
+        customer = db.session.query(Customers).filter_by(customer_id=customer_id).first()
+        details = {
+            'phone_number':customer.phone_number,
+            'address_id':customer.address_id,
+            'extra_information':customer.extra_information,
+            'biller_id':customer.biller_id
+        }
+
+    return details
+
+def get_customer_biller_info(biller_id):
+    """Get a customer's biller information based on its biller ID"""
+    details = {
+        'name':'Not set',
+        'email':'Not set'
+    }
+
+    if biller_id != 'Not set':
+        customer = db.session.query(BillerInformation).filter_by(biller_id=biller_id).first()
+        try:
+            details = {
+                'name':customer.name if customer.name else 'Not set',
+                'email':customer.email if customer.email else 'Not set',
+            }
+        except:
+            return details
+    return details
+
+def get_customer_address(address_id):
+    """Get a customer's  address based on its address ID"""
+    details = {
+        'unit':'Not set',
+        'building':'Not set',
+        'street':'Not set',
+        'city':'Not set',
+        'state':'Not set',
+        'country':'Not set',
+        'post_code':'Not set'
+    }
+
+    if address_id != 'Not set':
+        customer = db.session.query(Addresses).filter_by(address_id=address_id).first()
+        details = {
+            'unit': customer.unit if customer.unit else 'Not set',
+            'building': customer.building if customer.building else 'Not set',
+            'street': customer.street if customer.street else 'Not set',
+            'city': customer.city if customer.city else 'Not set',
+            'state': customer.state if customer.state else 'Not set',
+            'country': customer.country if customer.country else 'Not set',
+            'post_code': customer.post_code if customer.post_code else 'Not set',
+        }
+
+    return details
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -122,16 +190,18 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         uid = db.session.query(Users).filter(Users.username==form.username.data).one_or_none()
-        #TODO return something for invalid user
-        user = Users.query.get(uid.user_id)
-        if user:
-            if user.password == form.password.data:
-                print("authenticated")
-                user.authenticated = True
-                db.session.add(user)
-                db.session.commit()
-                login_user(user, remember=True)
-                return redirect('/')
+        try:
+            user = Users.query.get(uid.user_id)
+            if user:
+                if user.password == form.password.data:
+                    print("authenticated")
+                    user.authenticated = True
+                    db.session.add(user)
+                    db.session.commit()
+                    login_user(user, remember=True)
+                    return redirect('/')
+        except:
+            return render_template("login.html", form=form)
     return render_template("login.html", form=form)
 
 @app.route("/logout", methods=["GET"])
@@ -178,6 +248,76 @@ def index():
    mail.send(msg)
    return "Sent"
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    form = CustomerProfile()
+    user = current_user
+    details = get_customer_details(user.get_attribute('customer_id'))
+    biller_info = get_customer_biller_info(details['biller_id'])
+    address_info = get_customer_address(details['address_id'])
+
+    if form.validate_on_submit():
+        try:
+            breakpoint()
+            change = False
+            customer = db.session.query(Addresses).filter_by(address_id=details['address_id']).first()
+            if form.addressUnit.data != '':
+                customer.unit = form.addressUnit.data
+                change = True
+            if form.addressCity.data != '':
+                customer.city = form.addressCity.data
+                change = True
+            if form.addressStreet.data != '':
+                customer.street = form.addressStreet.data
+                change = True
+            if form.addressState.data != '':
+                customer.state = form.addressState.data
+                change = True
+            if form.addressPostCode.data != '':
+                customer.post_code = form.addressPostCode.data
+                change = True
+            if form.addressCountry.data != '':
+                customer.country = form.addressCountry.data
+                change = True
+
+            customer = db.session.query(BillerInformation).filter_by(biller_id=details['biller_id']).first()
+            if form.billerName.data != '':
+                customer.name = form.billerName.data
+                change = True
+            if form.billerEmail.data != '':
+                customer.email = form.billerEmail.data
+                change = True
+
+            customer = db.session.query(Customers).filter_by(customer_id=user.get_attribute('customer_id')).first()
+            if form.phoneNumber.data != '':
+                customer.phone_number = form.phoneNumber.data
+                change = True
+            if form.extraInformation.data != '':
+                customer.extra_information = form.extraInformation.data
+                change = True
+            if form.firstName.data != '':
+                user.first_name = form.firstName.data
+                change = True
+
+            if change:
+                db.session.commit()
+                flash(f'Profile data updated')
+
+                details = get_customer_details(user.get_attribute('customer_id'))
+                biller_info = get_customer_biller_info(details['biller_id'])
+                address_info = get_customer_address(details['address_id'])
+
+        except:
+            flash(f'Profile could not be updated succesfully')
+
+    return render_template('profile.html',
+                                title='Customer Profile Information',
+                                form=form,
+                                details=details,
+                                biller_info=biller_info,
+                                address_info=address_info)
+
 @app.route('/register' , methods=['GET', 'POST'])
 def register():
     form = CustomerInformationForm()
@@ -221,7 +361,6 @@ def register():
         # Send to some other page
 
         # (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`)
-        breakpoint()
         reg_user = Users(
             username=form.email.data,
             password=form.password.data,
@@ -231,7 +370,6 @@ def register():
             customer_id=reg_customer.customer_id,
             authenticated=0,
         )
-        breakpoint()
         db.session.add(reg_user)
         db.session.commit()
 
@@ -254,7 +392,7 @@ def edit_services():
             reg_edit_bcs = BeautyCareServices(
                 service_name=form.serviceName.data,
                 cost=form.serviceCost.data,
-                duration_minutes=form.durationMinutes.data
+                # duration_minutes=form.durationMinutes.data
             )
             db.session.add(reg_edit_bcs)
             db.session.commit()

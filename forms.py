@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField
+from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField, SelectField, DateTimeField
 from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -32,11 +32,34 @@ class CustomerInformationForm(FlaskForm):
     # Submit Form
     submit = SubmitField('Submit')
 
+class CustomerProfile(CustomerInformationForm):
+    #Customer information
+    firstName = StringField('First Name')
+    lastName = StringField('Last Name')
+    phoneNumber = StringField('Phone Number')
+    email = EmailField('Email address')
+    password = PasswordField('Password')
+    extraInformation = StringField('Extra Information')
+    #Biller information
+    billerName = StringField('Name on Invoice')
+    billerEmail = EmailField('Biller\'s Email address')
+    # Address
+    addressUnit = StringField('Unit')
+    addressBuilding = StringField('Building')
+    addressStreet = StringField('Street')
+    addressCity = StringField('City / Suburb')
+    addressState = StringField('State')
+    addressPostCode = StringField('Post Code')
+    addressCountry = StringField('Country')
+    # Submit Form
+    submit = SubmitField('Update')
+
 class EditServices(FlaskForm):
     #Add a servcies
-    serviceName = StringField('Service Name', validators=[DataRequired()])
+    # serviceName = StringField('Service Name', validators=[DataRequired()])
+    serviceName = SelectField('Service Name', choices=['haircut', 'hair wash & dry', 'hair colour'])
     serviceCost = DecimalField('Service Cost', places=2, rounding=ROUND_HALF_UP, validators=[DataRequired()])
-    durationMinutes = IntegerField('Duration Minutes', validators=[DataRequired()])
+    # appointmentTime = DateTimeField('Time of the appointment', format='%d-%m-%Y %H:%M:%S')
     #Submit Form
     submit = SubmitField('Submit')
 

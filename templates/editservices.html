@@ -6,25 +6,19 @@
         {{ form.hidden_tag() }}
         <p>
             {{ form.serviceName.label }}<br>
-            {{ form.serviceName(size=32) }}
+            {{ form.serviceName }}
             {% for error in form.serviceName.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
             {{ form.serviceCost.label }}<br>
             {{ form.serviceCost(size=32) }}
             {% for error in form.serviceCost.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>
-            {{ form.durationMinutes.label }}<br>
-            {{ form.durationMinutes(size=10) }}
-            {% for error in form.durationMinutes.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
+
 
         <p>{{ form.submit() }}</p>
     </form>

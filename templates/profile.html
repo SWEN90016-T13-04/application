@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Customer Information</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        Current First Name: {{ current_user.first_name }}
+        <p>
+            New First Name:<br>
+            {{ form.firstName(size=32) }}
+            {% for error in form.firstName.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Last Name: {{ current_user.last_name }}
+        <p>
+            New Last Name:<br>
+            {{ form.lastName(size=32) }}
+            {% for error in form.lastName.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Phone Number: {{ details['phone_number'] }}
+        <p>
+            New Phone Number:<br>
+            {{ form.phoneNumber(size=10) }}
+            {% for error in form.phoneNumber.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Email: {{ current_user.get_attribute('username') }}
+        <p>
+            New Email:<br>
+            {{ form.email(size=10) }}
+            {% for error in form.email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Extra Information: {{ details['extra_information'] }}
+        <p>
+            New Extra Information:<br>
+            {{ form.extraInformation(size=32) }}
+            {% for error in form.extraInformation.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Set new password:
+        <p>
+            New password:<br>
+            {{ form.password(size=10) }}
+            {% for error in form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+    <!--Biller information-->
+
+        Current Biller Name: {{ biller_info['name'] }}
+        <p>
+            New Biller Name:<br>
+            {{ form.billerName(size=32) }}
+            {% for error in form.billerName.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Biller Email: {{ biller_info['email'] }}
+        <p>
+            New Biller Email:<br>
+            {{ form.billerEmail(size=32) }}
+            {% for error in form.billerEmail.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <!--Customer Address-->
+
+        Current Address Unit: {{ address_info['unit'] }}
+        <p>
+            New Address Unit:<br>
+            {{ form.addressUnit(size=5) }}
+            {% for error in form.addressUnit.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address Building: {{ address_info['building'] }}
+        <p>
+            New Address Building:<br>
+            {{ form.addressBuilding(size=7) }}
+            {% for error in form.addressBuilding.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address Street: {{ address_info['street'] }}
+        <p>
+            New Address Street:<br>
+            {{ form.addressStreet(size=32) }}
+            {% for error in form.addressStreet.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address City: {{ address_info['city'] }}
+        <p>
+            New Address City:<br>
+            {{ form.addressCity(size=32) }}
+            {% for error in form.addressCity.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address State: {{ address_info['state'] }}
+        <p>
+            New Address State:<br>
+            {{ form.addressState(size=3) }}
+            {% for error in form.addressState.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address Post Code: {{ address_info['post_code'] }}
+        <p>
+            New Address Post Code:<br>
+            {{ form.addressPostCode(size=4) }}
+            {% for error in form.addressPostCode.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        Current Address Country: {{ address_info['country'] }}
+        <p>
+            New Address Country:<br>
+            {{ form.addressCountry(size=32) }}
+            {% for error in form.addressCountry.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+    <!--Submit Button-->
+    <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
