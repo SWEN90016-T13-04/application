@@ -181,7 +181,7 @@ LOCK TABLES `customers` WRITE;
 INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (1,'Hugh','Jass',5551234,1,'hjass@gmail.com','password','Is fragile',1,0);
 INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (2,'Lorretta','Schmetta',7896541,2,'hmu@email.com','password','Is old',2,0);
 INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (3,'Jimmy','Barnetsein',1597532,2,'hmu2@email.com','password','Smells like boiled cabbage',3,0);
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\'t walk',0,0);
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone_number`, `address_id`, `email`, `password`, `extra_information`, `biller_id`, `authenticated`) VALUES (4,'Gary','Oldman',1478569,3,'goldman@gmail.com','password','Can\''t walk',0,0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 

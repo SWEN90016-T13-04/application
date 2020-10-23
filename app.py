@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
-from forms import CustomerInformationForm, EditServices, LoginForm
+from forms import BookingForm, CustomerInformationForm, EditServices, LoginForm
 from flask_login import LoginManager, login_manager, login_required, login_user, current_user, logout_user
 
 app = Flask(__name__)
@@ -73,6 +73,8 @@ class Users(db.Model):
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
+
+
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -236,6 +238,42 @@ def edit_servcies():
                             title='Edit Beauty Care Services',
                             form=form)
 
+
+
+#Book in new appointment
+
+@app.route('/booking', methods=['GET','POST'])
+@login_required
+
+
+"""def service_choices():
+    #TODO Check
+    return db.session.query(BeautyCareServices.service_name)"""
+
+
+def booking_appointment():
+    form = BookingForm()
+    if form.validate_on_submit():
+        flash(f'Successfully made booking')
+        booking_app = AppointmentBooking(
+            date=form.bookingDate.data
+            start_time=form.bookingStartTime.data  
+            message=form.optionalMessage.data  
+        )
+        """ Implement columns below to add to database:
+        service_id
+        location 
+        beauty_carer_id=
+        customer_id=
+        """
+        
+        db.session.add(booking_app)
+        db.session.commit()
+        return redirect('/booking')
+    
+    return render_template('booking.html', 
+                            title='Make a Booking',
+                            form=form)
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)

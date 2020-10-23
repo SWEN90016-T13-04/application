@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField
+from wtforms import DateField, TimeField, TextAreaField, StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField, SelectField, QuerySelectField
 from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -44,3 +44,21 @@ class LoginForm(FlaskForm):
     username = EmailField('Username / Email')
     password = PasswordField('Password')
     submit = SubmitField('Submit')
+
+class BookingForm(FlaskForm):
+         
+    #Service information
+    #TODO How to implement queryselectfield with the database?
+    serviceName = QuerySelectField('Service Name',
+                                    [DataRequired()],)                               
+    #Booking date
+    bookingDate = DateField('Booking Date. YYYY-MM-DD',[DataRequired()])
+
+    #Booking time
+    bookingStartTime = TimeField('Start time. 1 hour increments from 9:00 - 17:00',[DataRequired()], format='%H:%M')
+
+    #TODO Check if we need end time - assumed all services will be 1 hour long.
+    #bookingEndTime = TimeField('End at',[DataRequired()])
+                          
+    #Optional message
+    optionalMessage = TextAreaField('Optional message')

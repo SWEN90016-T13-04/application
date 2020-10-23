@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Make a Booking</h1>
+    <form action="" method="post" novalidate>
+<!--Service Name-->
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.serviceName.label }}<br>
+            {{ form.serviceName(size=32) }}
+            {% for error in form.serviceName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+<!--Booking Date-->    
+        <p>
+            {{ form.bookingDate.label }}<br>
+            {{ form.bookingDate(size=32) }}
+            {% for error in form.bookingTime.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+<!--Booking Time-->    
+        <p>
+            {{ form.bookingStartTime.label }}<br>
+            {{ form.bookingStartTime(size=32) }}
+            {% for error in form.bookingTime.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+<!-- Do not need end time
+        <p>
+            {{ form.bookingEndTime.label }}<br>
+            {{ form.bookingTime(size=32) }}
+            {% for error in form.bookingTime.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+-->
+        
+<!-- Optional Message-->
+        <p>
+            {{ form.optionalMessage.label }}<br>
+            {{ form.optionalMessage(size=32) }}
+            {% for error in form.optionalMessage.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+      <!--Submit Button-->
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
+            
