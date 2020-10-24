@@ -180,6 +180,10 @@ def user_loader(user_id):
 #     session['logged_in'] = False
 #     return home()
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """For GET requests, display the login form. 
