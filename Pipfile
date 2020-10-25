@@ -6,6 +6,11 @@ name = "pypi"
 [packages]
 flask = "*"
 email_validator = "*"
+flask-mail = "*"
+flask-wtf = "*"
+flask-sqlalchemy = "*"
+mysql-connector-python = "*"
+flask-login = "*"
 
 [dev-packages]
 

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Beauty Care Services</h1>
+    {% if current_user.is_authenticated %}
+        <a href="/logout">Logout</a>
+    {% else %}
+        Not registered? <a href="/register">register!</a>
+        <a href="/login">Login</a>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+        <a href="/profile">Personal Profile</a>
+        {% if current_user.get_privileges() >= 7 %}
+            <a href="/editservices">Edit Services</a>
+        {% endif %}
+        <br>
+        <a href="/book">Book an Appointment</a>
+        <br>
+        <a href="/mybook">My Appointments</a>
+    {% endif %}
+
+{% endblock %}

@@ -1,24 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Edit Beauty Care Services</h1>
+    <h1>Book Beauty Care Services</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.serviceName.label }}<br>
-            {{ form.serviceName }}
-            {% for error in form.serviceName.errors %}
+            {{ form.bookingName.label }}<br>
+            {{ form.bookingName }}
+            {% for error in form.bookingName.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.serviceCost.label }}<br>
-            {{ form.serviceCost(size=32) }}
-            {% for error in form.serviceCost.errors %}
+            {{ form.bookingDate.label }}<br>
+            {{ form.bookingDate(size=10) }}
+            {% for error in form.bookingDate.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-
 
         <p>{{ form.submit() }}</p>
     </form>
