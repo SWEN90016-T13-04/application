@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Book Beauty Care Services</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.availabilityTime.label }}<br>
+            {{ form.availabilityTime }}
+            {% for error in form.availabilityTime.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.availabilityServices.label }}<br>
+            {{ form.availabilityServices }}
+            {% for error in form.availabilityServices.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.availabilityLocation.label }}<br>
+            {{ form.availabilityLocation }}
+            {% for error in form.availabilityLocation.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.availabilityMessage.label }}<br>
+            {{ form.availabilityMessage }}
+            {% for error in form.availabilityMessage.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField, SelectField, DateTimeField
+from wtforms import StringField, PasswordField, BooleanField, validators, SubmitField, IntegerField, DecimalField, SelectField, DateTimeField, DateField, TimeField
 from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -62,6 +62,21 @@ class EditServices(FlaskForm):
     # appointmentTime = DateTimeField('Time of the appointment', format='%d-%m-%Y %H:%M:%S')
     #Submit Form
     submit = SubmitField('Submit')
+
+class BookingForm(FlaskForm):
+    #Add a servcies
+    bookingName = SelectField('Service Name', choices=['haircut', 'hair wash & dry', 'hair colour'], validators=[DataRequired()])
+    # serviceCost = DecimalField('Service Cost', places=2, rounding=ROUND_HALF_UP, validators=[DataRequired()])
+    bookingDate = DateField('Date of the appointment YYYY-MM-DD', validators=[DataRequired()])
+    #Submit Form
+    submit = SubmitField('Check Date Availability')
+
+class AvailabilityForm(FlaskForm):
+    availabilityTime = SelectField('Start times:', coerce=str, validators=[DataRequired()])
+    availabilityServices = SelectField('Service Cost:', coerce=float, validators=[DataRequired()])
+    availabilityLocation = StringField('Location (leave empty to use Customer Address):')
+    availabilityMessage = StringField('Optional Message for the carer:')
+    submit = SubmitField('Book')
 
 class LoginForm(FlaskForm):
     username = EmailField('Username / Email')

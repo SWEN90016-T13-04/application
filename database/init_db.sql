@@ -68,18 +68,15 @@ CREATE TABLE `appointment_booking` (
   `appointment_id` int NOT NULL AUTO_INCREMENT,
   `beauty_carer_id` int NOT NULL,
   `service_id` int NOT NULL,
-  `location` int NOT NULL,
+  `location` varchar(250) NOT NULL,
   `customer_id` int NOT NULL,
   `date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL,
   `message` varchar(250) DEFAULT NULL,
-  PRIMARY KEY (`appointment_id`,`beauty_carer_id`,`service_id`,`location`,`customer_id`),
+  PRIMARY KEY (`appointment_id`),
   KEY `fk_appointment_boking_users1_idx` (`beauty_carer_id`),
   KEY `fk_appointment_boking_beauty_care_services1_idx` (`service_id`),
-  KEY `fk_appointment_boking_addresses1_idx` (`location`),
   KEY `fk_appointment_boking_customers1_idx` (`customer_id`),
-  CONSTRAINT `fk_appointment_boking_addresses1` FOREIGN KEY (`location`) REFERENCES `addresses` (`address_id`),
   CONSTRAINT `fk_appointment_boking_beauty_care_services1` FOREIGN KEY (`service_id`) REFERENCES `beauty_care_services` (`service_id`),
   CONSTRAINT `fk_appointment_boking_customers1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
   CONSTRAINT `fk_appointment_boking_users1` FOREIGN KEY (`beauty_carer_id`) REFERENCES `users` (`user_id`)
@@ -92,8 +89,8 @@ CREATE TABLE `appointment_booking` (
 
 LOCK TABLES `appointment_booking` WRITE;
 /*!40000 ALTER TABLE `appointment_booking` DISABLE KEYS */;
-INSERT INTO `appointment_booking` (`appointment_id`, `beauty_carer_id`, `service_id`, `location`, `customer_id`, `date`, `start_time`, `end_time`, `message`) VALUES (1,1,1,1,1,'2020-10-10','09:00:00','09:59:00',NULL);
-INSERT INTO `appointment_booking` (`appointment_id`, `beauty_carer_id`, `service_id`, `location`, `customer_id`, `date`, `start_time`, `end_time`, `message`) VALUES (2,1,2,2,2,'2020-10-10','10:00:00','10:59:00',NULL);
+INSERT INTO `appointment_booking` (`appointment_id`, `beauty_carer_id`, `service_id`, `location`, `customer_id`, `date`, `start_time`, `message`) VALUES (1,1,1,'Not disclosed',1,'2020-10-10','09:00:00', NULL);
+INSERT INTO `appointment_booking` (`appointment_id`, `beauty_carer_id`, `service_id`, `location`, `customer_id`, `date`, `start_time`, `message`) VALUES (2,1,2,'Not disclosed',2,'2020-10-10','10:00:00', NULL);
 /*!40000 ALTER TABLE `appointment_booking` ENABLE KEYS */;
 UNLOCK TABLES;
 

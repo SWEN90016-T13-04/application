@@ -1,12 +1,13 @@
 from flask import Flask
-from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
 from flask_mail import Mail, Message
 from flask_wtf import FlaskForm
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
 import mysql.connector
 import os
-from forms import CustomerInformationForm, EditServices, LoginForm, CustomerProfile
+import random
+from forms import CustomerInformationForm, EditServices, LoginForm, CustomerProfile, BookingForm, AvailabilityForm
 from flask_login import LoginManager, login_manager, login_required, login_user, current_user, logout_user
 
 app = Flask(__name__)
@@ -160,26 +161,6 @@ def user_loader(user_id):
     """
     return Users.query.get(user_id)
 
-# @app.route('/')
-# def home():
-#     if not session.get('logged_in'):
-#         return render_template('login.html')
-#     else:
-#         return 'Hello Boss!  <a href="/logout">Logout</a>'
-
-# @app.route('/login', methods=['POST'])
-# def do_admin_login():
-#     if request.form['password'] == 'password' and request.form['username'] == 'admin':
-#         session['logged_in'] = True
-#     else:
-#         flash('wrong password!')
-#     return home()
-
-# @app.route("/logout")
-# def logout():
-#     session['logged_in'] = False
-#     return home()
-
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -224,33 +205,80 @@ def logout():
 @app.route('/appointments')
 @login_required
 def appointments():
-    results = db.session.query(
-            AppointmentBooking, Addresses, BeautyCareServices, Customers, Users, 
-        ).filter(
-            AppointmentBooking.beauty_carer_id == Users.user_id,
-        ).filter(
-            AppointmentBooking.service_id == BeautyCareServices.service_id,    
-        ).filter(
-            AppointmentBooking.location == Addresses.address_id,  
-        ).filter(
-            AppointmentBooking.customer_id == Customers.customer_id  
-        ).order_by(AppointmentBooking.date, AppointmentBooking.start_time
-        ).all()
-    
+    priv = current_user.get_attribute('privileges')
+    if priv < 7:
+        return redirect('/')
+
+    res = db.session.query(AppointmentBooking).order_by(AppointmentBooking.date, AppointmentBooking.start_time).all()
+    results = []
+
+    for row in res:
+        customer = db.session.query(Users).filter(Users.customer_id == row.customer_id)[0]
+        beauty_carer = db.session.query(Users).filter(Users.user_id == row.beauty_carer_id)[0]
+        service = db.session.query(BeautyCareServices).filter(BeautyCareServices.service_id == row.service_id)[0]
+        c_f_name = customer.first_name
+        c_l_name = customer.last_name
+        b_f_name = beauty_carer.first_name
+        b_l_name = beauty_carer.last_name
+
+        p = {'date':row.date,
+                 'start_time':row.start_time,
+                 'carer_name': b_f_name + " " + b_l_name,
+                 'customer_name': c_f_name + " " + c_l_name,
+                 'service_name':service.service_name,
+                 'service_cost':service.cost,
+                 'location':row.location}
+
+        results.append(p)
+
     if not results:
         flash('No Appointments found')
     return render_template('appointments.html',
                             title='Booking Registrations',
                             rows=results)
 
+@app.route("/mybook")
+def mybook():
+    customer_id = current_user.get_attribute('customer_id')
+    res = db.session.query(AppointmentBooking).filter(AppointmentBooking.customer_id == customer_id)\
+        .order_by(AppointmentBooking.date, AppointmentBooking.start_time).all()
+    results = []
 
-#basic endpoint to send
-@app.route("/mail")
-def index():
-   msg = Message('Hello', sender = 'swen.group1304@gmail.com', recipients = ['jbarriossute@student.unimelb.edu.au'])
-   msg.body = "This is the email body"
-   mail.send(msg)
-   return "Sent"
+    for row in res:
+        beauty_carer = db.session.query(Users).filter(Users.user_id == row.beauty_carer_id)[0]
+        service = db.session.query(BeautyCareServices).filter(BeautyCareServices.service_id == row.service_id)[0]
+        b_f_name = beauty_carer.first_name
+        b_l_name = beauty_carer.last_name
+
+        p = {'date':row.date,
+                 'start_time':row.start_time,
+                 'carer_name': b_f_name + " " + b_l_name,
+                 'service_name':service.service_name,
+                 'service_cost':service.cost,
+                 'location':row.location}
+
+        results.append(p)
+
+    if not results:
+        flash('No Appointments found')
+    return render_template('mybook.html',
+                            title='Booking Registrations',
+                            rows=results)
+
+def send_mail(beauty_carer, customer_name, customer_phone, customer_email, app_date, app_time):
+    msg = Message("Booking appointment for Beth's Beauty Services", sender = 'swen.group1304@gmail.com', recipients = ['swen.group1304@gmail.com', 'jbarriossute@student.unimelb.edu.au'])
+    msg.body = f"""
+        A new appointment has been made for {beauty_carer}:
+        * Customer Name: {customer_name}
+        * Customer Phone: {customer_phone}
+        * Customer Email: {customer_email}
+
+        This appointment is set for:
+        * Date: {app_date}
+        * Time: {app_time}
+    """
+    mail.send(msg)
+    print("Sent Email")
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -263,7 +291,6 @@ def profile():
 
     if form.validate_on_submit():
         try:
-            breakpoint()
             change = False
             customer = db.session.query(Addresses).filter_by(address_id=details['address_id']).first()
             if form.addressUnit.data != '':
@@ -322,6 +349,101 @@ def profile():
                                 biller_info=biller_info,
                                 address_info=address_info)
 
+@app.route('/book', methods=['GET', 'POST'])
+@login_required
+def book():
+    form = BookingForm()
+    if form.validate_on_submit():
+        service_name = form.bookingName.data
+        service_date = form.bookingDate.data
+        return redirect(url_for('booktime', service_name=service_name, service_date=service_date))
+
+    return render_template('book.html',
+                           title='Appointment booker',
+                           form=form)
+
+
+
+@app.route('/booktime', methods=['GET', 'POST'])
+@login_required
+def booktime():
+
+    slots = [str(t) + ':00' for t in range(9, 17)]
+
+    service_name = request.args.get('service_name')
+    service_date = request.args.get('service_date')
+
+    date_appoint = db.session.query(AppointmentBooking).filter(AppointmentBooking.date == service_date)
+    no_beauty = db.session.query(Users).filter(Users.privileges >= 3).count()
+    choices = [i for i in slots if date_appoint.filter(AppointmentBooking.start_time == i).count() < no_beauty]
+
+    avail_services = db.session.query(BeautyCareServices).filter(BeautyCareServices.service_name == service_name)
+    service_choices = [row.cost for row in avail_services]
+
+    form = AvailabilityForm()
+    form.availabilityTime.choices = choices
+    form.availabilityServices.choices = service_choices
+
+    customer_id = current_user.get_attribute("customer_id")
+    customer_details = get_customer_details(customer_id)
+    customer_address = get_customer_address(customer_details['address_id'])
+
+    if form.validate_on_submit():
+        time_selected = form.availabilityTime.data
+        service_cost = form.availabilityServices.data
+        location = form.availabilityLocation.data if form.availabilityLocation.data != '' else None
+        carers = set([row.user_id for row in db.session.query(Users).filter(Users.privileges >= 3)])
+        occupied = set([row.beauty_carer_id for row in date_appoint.filter(AppointmentBooking.start_time == time_selected)])
+        selected = random.choice(list(carers - occupied))
+        service_selected = avail_services.filter(BeautyCareServices.service_name == service_name)\
+                                         .filter(BeautyCareServices.cost == service_cost)\
+                                         .first().service_id
+
+
+        if location is None:
+            address = customer_address['unit'] + "/" if customer_address['unit'] != 'Not set' else ''
+            address += customer_address['building'] + " " if customer_address['building'] != 'Not set' else ''
+            address += customer_address['street'] + ", "
+            address += customer_address['city'] + ", "
+            address += customer_address['state'] + ' '
+            address += customer_address['post_code']
+        else:
+            address = location
+
+        booking_app = AppointmentBooking(
+            beauty_carer_id = selected,
+            customer_id = customer_id,
+            service_id =service_selected,
+            date=service_date,
+            start_time = time_selected,
+            message = form.availabilityMessage.data,
+            location=address
+        )
+
+        db.session.add(booking_app)
+        db.session.commit()
+
+        customer = db.session.query(Customers).filter_by(customer_id=customer_id).first()
+        beauty_carer = db.session.query(Users).filter(Users.user_id == selected)[0]
+        c_f_name = current_user.get_attribute('first_name')
+        c_l_name = current_user.get_attribute('last_name')
+        c_name = c_f_name + " " + c_l_name
+        b_f_name = beauty_carer.first_name
+        b_l_name = beauty_carer.last_name
+        b_name = b_f_name + " " + b_l_name
+
+        send_mail(b_name, c_name, customer.phone_number, current_user.get_attribute("username"), service_date, time_selected)
+
+        flash(f"Booked appointment of {service_name} on {service_date} at {time_selected}")
+        return redirect('/')
+
+    return render_template('/booktime.html',
+                           title=f'Book a {service_name} for a time',
+                           service_name=service_name,
+                           service_date=service_date,
+                           form=form)
+
+
 @app.route('/register' , methods=['GET', 'POST'])
 def register():
     form = CustomerInformationForm()
@@ -364,7 +486,6 @@ def register():
         db.session.flush()
         # Send to some other page
 
-        # (`user_id`, `username`, `password`, `privileges`, `first_name`, `last_name`, `customer_id`, `authenticated`)
         reg_user = Users(
             username=form.email.data,
             password=form.password.data,
@@ -377,15 +498,13 @@ def register():
         db.session.add(reg_user)
         db.session.commit()
 
-        return redirect('/register')
+        return redirect('/login')
     return render_template('register.html', 
                             title='Customer Information Form',
                             form=form)
 
-# TODO: Changes don't seem to be persistent?
 
 # Edit available Beauty Care Services
-#TODO implement ability to delete services with QuerySelectField
 @app.route('/editservices' , methods=['GET', 'POST'])
 @login_required
 def edit_services():
