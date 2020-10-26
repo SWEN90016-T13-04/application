@@ -265,7 +265,7 @@ def mybook():
                             title='Booking Registrations',
                             rows=results)
 
-def send_mail(beauty_carer, customer_name, customer_phone, customer_email, app_date, app_time):
+def send_mail(beauty_carer, customer_name, customer_phone, customer_email, app_date, app_time, app_message):
     msg = Message("Booking appointment for Beth's Beauty Services", sender = 'swen.group1304@gmail.com', recipients = ['swen.group1304@gmail.com', 'jbarriossute@student.unimelb.edu.au'])
     msg.body = f"""
         A new appointment has been made for {beauty_carer}:
@@ -276,6 +276,9 @@ def send_mail(beauty_carer, customer_name, customer_phone, customer_email, app_d
         This appointment is set for:
         * Date: {app_date}
         * Time: {app_time}
+
+        Message:
+        {app_message}
     """
     mail.send(msg)
     print("Sent Email")
@@ -427,12 +430,15 @@ def booktime():
         beauty_carer = db.session.query(Users).filter(Users.user_id == selected)[0]
         c_f_name = current_user.get_attribute('first_name')
         c_l_name = current_user.get_attribute('last_name')
+
+      
+
         c_name = c_f_name + " " + c_l_name
         b_f_name = beauty_carer.first_name
         b_l_name = beauty_carer.last_name
         b_name = b_f_name + " " + b_l_name
 
-        send_mail(b_name, c_name, customer.phone_number, current_user.get_attribute("username"), service_date, time_selected)
+        send_mail(b_name, c_name, customer.phone_number, current_user.get_attribute("username"), service_date, time_selected, booking_app.message)
 
         flash(f"Booked appointment of {service_name} on {service_date} at {time_selected}")
         return redirect('/')

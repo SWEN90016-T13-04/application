@@ -60,6 +60,8 @@ class EditServices(FlaskForm):
     serviceName = SelectField('Service Name', choices=['haircut', 'hair wash & dry', 'hair colour'])
     serviceCost = DecimalField('Service Cost', places=2, rounding=ROUND_HALF_UP, validators=[DataRequired()])
     # appointmentTime = DateTimeField('Time of the appointment', format='%d-%m-%Y %H:%M:%S')
+    #optional message
+    bookingMessage = StringField('Optional Message')
     #Submit Form
     submit = SubmitField('Submit')
 
