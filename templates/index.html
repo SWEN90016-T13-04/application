@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Edit Beauty Care Services</h1>
+    <h1>Home</h1>
     {% if current_user.is_authenticated %}
         <a href="/logout">Logout</a>
     {% else %}
@@ -10,14 +10,13 @@
     {% endif %}
 
     {% if current_user.is_authenticated %}
-        <a href="/profile">Personal Profile</a>
+    <p> <a href="/profile">Personal Profile</a>  </p>
         {% if current_user.get_privileges() >= 7 %}
-            <a href="/editservices">Edit Services</a>
+            <p><a href="/editservices">Edit Services</a></p>
+            <p><a href="/appointments">View All Appointments</a></p>
         {% endif %}
-        <br>
-        <a href="/book">Book an Appointment</a>
-        <br>
-        <a href="/mybook">My Appointments</a>
+        <p><a href="/book">Book an Appointment</a></p>
+        <p><a href="/mybook">My Appointments</a></p>
     {% endif %}
 
 {% endblock %}
